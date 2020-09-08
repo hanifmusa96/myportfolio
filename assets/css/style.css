@@ -297,7 +297,7 @@ input[type="submit"]:hover, button[type="submit"]:hover {
 /*=====================================
   Slide  CSS
 =======================================*/
-.slide-area{background-image: url(assets/img/hero-bg-1.jpg);}
+.slide-area{background-image: url(/img/hero-bg-1.jpg);}
 .slide-area.slide-parallax{
     background-position: 50% 0;
 }
@@ -305,7 +305,7 @@ input[type="submit"]:hover, button[type="submit"]:hover {
 	background: none;
 }
 .slide-video-bg {
-    background-image: url(assets/img/slider-bg-1.jpg);
+    background-image: url(/img/slider-bg-1.jpg);
     background-repeat:no-repeat;
     background-position:center center;
     background-size:cover;
@@ -379,14 +379,14 @@ input[type="submit"]:hover, button[type="submit"]:hover {
 /*=====================================
   Portfolio CSS
 =======================================*/
-.portfolio-bg-1{background-image: url(assets/img/portfolio-1.jpg);}
-.portfolio-bg-2{background-image: url(assets/img/portfolio-2.jpg);}
-.portfolio-bg-3{background-image: url(assets/img/portfolio-3.jpg);}
-.portfolio-bg-4{background-image: url(assets/img/portfolio-4.jpg);}
-.portfolio-bg-5{background-image: url(assets/img/portfolio-5.jpg);}
-.portfolio-bg-6{background-image: url(assets/img/portfolio-6.jpg);}
-.portfolio-bg-7{background-image: url(assets/img/portfolio-7.jpg);}
-.portfolio-bg-8{background-image: url(assets/img/portfolio-8.jpg);}
+.portfolio-bg-1{background-image: url(/img/portfolio-1.jpg);}
+.portfolio-bg-2{background-image: url(/img/portfolio-2.jpg);}
+.portfolio-bg-3{background-image: url(/img/portfolio-3.jpg);}
+.portfolio-bg-4{background-image: url(/img/portfolio-4.jpg);}
+.portfolio-bg-5{background-image: url(/img/portfolio-5.jpg);}
+.portfolio-bg-6{background-image: url(/img/portfolio-6.jpg);}
+.portfolio-bg-7{background-image: url(/img/portfolio-7.jpg);}
+.portfolio-bg-8{background-image: url(/img/portfolio-8.jpg);}
 
 .single-portfolio {
     background-position: center center;
@@ -493,7 +493,7 @@ input[type="submit"]:hover, button[type="submit"]:hover {
 /*=====================================
   Service CSS
 =======================================*/
-.service-area{background-image: url(assets/img/service-bg.jpg);}
+.service-area{background-image: url(/img/service-bg.jpg);}
 .service-area {
     background-position: center center;
     background-size: cover;
@@ -595,14 +595,13 @@ input[type="submit"]:hover, button[type="submit"]:hover {
   margin-bottom: 50px;
   overflow: inherit;
 }
-@-moz-keyframes animate-positive { 0%  { width:0px;} 100%}
-@-webkit-keyframes animate-positive  { 0%  { width:0px;} 100%}
+
 /*=====================================
   Blog CSS
 =======================================*/
-.blog-bg-1{background-image: url(assets/img/blog-1.jpg);}
-.blog-bg-2{background-image: url(assets/img/blog-2.jpg);}
-.blog-bg-3{background-image: url(assets/img/blog-3.jpg);}
+.blog-bg-1{background-image: url(/img/blog-1.jpg);}
+.blog-bg-2{background-image: url(/img/blog-2.jpg);}
+.blog-bg-3{background-image: url(/img/blog-3.jpg);}
 .blog-bg {
     background-color: #ddd;
     background-position: center center;
