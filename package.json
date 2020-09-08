@@ -1,0 +1,23 @@
+{
+  "name": "myportfolio",
+  "version": "1.0.0",
+  "description": "First project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanifmusa96/myportfolio.git"
+  },
+  "author": "Muhammad Hanif",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hanifmusa96/myportfolio/issues"
+  },
+  "homepage": "https://github.com/hanifmusa96/myportfolio#readme",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1"
+  }
+}
