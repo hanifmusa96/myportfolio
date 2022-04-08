@@ -1,128 +1,132 @@
-# create or update hive-site.xml : Global Configuration File for Hive
-/opt/hive/conf/hive-site.xml
-<configuration>
-  <property>
-    <name>javax.jdo.option.ConnectionURL</name>
-    <value>jdbc:postgresql://localhost:6432/metastore</value>
-    <description>JDBC Driver Connection for PostgrSQL</description>
-  </property>
- 
-  <property>
-    <name>javax.jdo.option.ConnectionDriverName</name>
-    <value>org.postgresql.Driver</value>
-    <description>PostgreSQL metastore driver class name</description>
-  </property>
- 
-  <property>
-    <name>javax.jdo.option.ConnectionUserName</name>
-    <value>hive</value>
-    <description>Database User Name</description>
-  </property>
- 
-  <property>
-    <name>javax.jdo.option.ConnectionPassword</name>
-    <value>sibaram12</value>
-    <description>Database User Password</description>
-  </property>
-</configuration>
- 
-# Remove the conflicting Guava Files if present.
-rm /opt/hive/lib/guava-19.0.jar
-cp /opt/hadoop/share/hadoop/hdfs/lib/guava-27.0-jre.jar /opt/hive/lib/
+#####################
+ ## Docker Set up ##
+#####################
 
-# Download a postgresql jar file and copy it to /opt/hive/lib/
-wget https://jdbc.postgresql.org/download/postgresql-42.2.24.jar
-sudo mv postgresql-42.2.24.jar /opt/hive/lib/postgresql-42.2.24.jar
+# Update the existing list of packages.
+sudo apt update
 
-# Initialize Hive Metastore
-schematool -dbType postgres -initSchema
+# Install few prerequisite packages.
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
 
-# Validate Metadata Tables
+# Add the GPG key for the official Docker repository to our host.
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+# Add the Docker repository to APT sources.
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+
+# Update the package database with the Docker packages from the newly added repo.
+sudo apt update
+
+# install the Docker policies
+apt-cache policy docker-ce
+
+# Install the docker
+sudo apt install docker-ce
+
+# Validate Docker Instalaltion.
+sudo systemctl status docker
+
+# Run docker commands with out sudo, we have to add the user to docker group. 
+sudo usermod -aG docker ${USER}
+
+Log out and login to validate.
+
+# Validate if user is added to docker group.
+id ${USER}
+docker images
+
+# To check whether you can access and download images from Docker Hub, type:
+docker run hello-world
+
+########################
+ ## PostgrSQL Set up ##
+########################
+# Now,Lets Set up Postgress Image in the Docker Container
+
+# Create the Container of type Postgress Image.
+docker create \
+    --name postgress_container \
+    -p 6432:5432 \
+    -e POSTGRES_PASSWORD=sibaram12 \
+    postgres
+	
+# Start the Container. 
+docker start postgress_container
+
+# Check if the container is running.
+docker logs -f postgress_container
+
+hit Control+c To come out.
+
+# We can validate if we are able to run postgress from docker.
+
 docker exec \
     -it postgress_container \
-    psql -U postgres \
-    -d metastore
+    psql -U postgres
+	
+# Createa database "metastore" for hive in postgress.
+CREATE DATABASE metastore;
+CREATE USER hive WITH ENCRYPTED PASSWORD 'sibaram12';
+GRANT ALL ON DATABASE metastore TO hive;	
 
+\l to list
+\q to exit postgress	
 
-# Update /opt/spark3/conf/spark-defaults.conf with below properties.
-spark.driver.extraJavaOptions     -Dderby.system.home=/tmp/derby/
-spark.sql.repl.eagerEval.enabled  true
-spark.master                      yarn
-spark.eventLog.enabled            true
-spark.eventLog.dir                hdfs:///spark3-logs
-spark.history.provider            org.apache.spark.deploy.history.FsHistoryProvider
-spark.history.fs.logDirectory     hdfs:///spark3-logs
-spark.history.fs.update.interval  10s
-spark.history.ui.port             18080
-spark.yarn.historyServer.address  localhost:18080
-spark.yarn.jars                   hdfs:///spark3-jars/*.jar
+# If you want to access postgress from host, we have to install a postgress client.
+sudo apt install postgresql-client -y
 
-# Create directories for logs and jars in hdfs
-hdfs dfs -mkdir /spark3-jars
-hdfs dfs -mkdir /spark3-logs
+psql -h localhost \
+    -p 6432 \
+    -d metastore \
+    -U hive \
+    -W 
 
-# Copy Spark jars to HDFS folder as part of spark.yarn.jars
-hdfs dfs -put /opt/spark3/jars/* /spark3-jars
+\d to list tables.
+\q to exit
 
-# Integrate Spark with Hive Metastore. Create soft link for hive-site.xml in Spark conf folder
-sudo ln -s /opt/hive/conf/hive-site.xml /opt/spark3/conf/
+########################
+ ###    Hive Set up ###
+########################
+# Download Hive.
+wget https://mirrors.ocf.berkeley.edu/apache/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz
 
-# Install Postgres JDBC jar in Spark jars folder
-sudo wget https://jdbc.postgresql.org/download/postgresql-42.2.19.jar -O /opt/spark3/jars/postgresql-42.2.19.jar
+# Untar Hive File.
+tar xzf apache-hive-3.1.2-bin.tar.gz
 
-# Validate using Scala
-/opt/spark3/bin/spark-shell --master yarn --conf spark.ui.port=0
-exit by typing :q
+# Archive Hive tar file.
+mv apache-hive-3.1.2-bin.tar.gz softwares
 
-# Validate using Python
-/opt/spark3/bin/pyspark --master yarn --conf spark.ui.port=0
-spark.sql('SHOW databases').show()
-spark.sql('USE test')
-spark.sql('SELECT * FROM spark').show() 
-exit()
+# Set up Hive folder Structure.
+sudo mv -f apache-hive-3.1.2-bin /opt
 
-# All the commands (spark-shell, pyspark, spark-submit) are available in:
-/opt/spark3/bin
+# Create a soft link.
+sudo ln -s /opt/apache-hive-3.1.2-bin /opt/hive
 
-# Set these commands path at .profile. Add below 2 lines in .profile
-export PATH=$PATH:/opt/spark3/bin
+# Update HIVE_HOME in the .profile File
+cd
+export HIVE_HOME=/opt/hive
+export PATH=$PATH:${HIVE_HOME}/bin
 
+# Execute Profile or exit the session and connect again
 source .profile
 
-# Distigiush these commands in spark3
-mv /opt/spark3/bin/pyspark /opt/spark3/bin/pyspark3
-
-# Validate the commands
-pyspark3 --master yarn
 
 
-# Create Spark Job
-cd
-vi basic.py
-print("Start ...")
-  
-from pyspark.sql import SparkSession
-spark = SparkSession \
-       .builder \
-       .master('yarn') \
-       .appName("Python Spark SQL basic example") \
-       .getOrCreate()
 
-spark.sparkContext.setLogLevel('OFF')
-print("Spark Object is created")
-print("Spark Version used is :" + spark.sparkContext.version)
 
-print("... End")
 
-cp /opt/spark3/bin/spark-submit /opt/spark3/bin/spark3-submit
 
-# Submit the Job to the Cluster
-spark3-submit --master yarn /home/easylearnspark1/basic.py
 
-# Turn off the INFO logs
-cp /opt/spark3/conf/log4j.properties.template /opt/spark3/conf/log4j.properties 
-set log4j.rootCategory=INFO, console
-to
-log4j.rootCategory=WARN, console
 
-spark3-submit --master yarn /home/easylearnspark1/basic.py
+
+
+
+
+
+
+
+
+
+
+
+
